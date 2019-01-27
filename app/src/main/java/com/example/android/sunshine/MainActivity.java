@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -31,6 +33,8 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mWeatherDisplayTextView;
+    private TextView mErrorMessageTextView;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forecast);
 
         mWeatherDisplayTextView = findViewById(R.id.tv_weather_data);
+        mErrorMessageTextView = findViewById(R.id.tv_error_message);
+        mProgressBar = findViewById(R.id.pb_loading_data);
 
         loadWeatherData();
     }
@@ -61,12 +67,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Getting user location and querying for weather data
+     */
     private void loadWeatherData() {
+        showWeatherDataView();
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
         new WeatherAsyncTask().execute(location);
     }
 
+    /**
+     * Showing weather data and hiding error message
+     */
+    private void showWeatherDataView() {
+        mWeatherDisplayTextView.setVisibility(View.VISIBLE);
+        mErrorMessageTextView.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Showing error message and hiding weather data
+     */
+    private void showErrorMessage () {
+        mWeatherDisplayTextView.setVisibility(View.INVISIBLE);
+        mErrorMessageTextView.setVisibility(View.VISIBLE);
+    }
+
     private class WeatherAsyncTask extends AsyncTask<String, Void, String[]> {
+
+        @Override
+        protected void onPreExecute() {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String[] doInBackground(String... strings) {
@@ -91,10 +122,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[] weatherData) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+
             if (weatherData != null) {
                 for (String string: weatherData) {
+                    showWeatherDataView();
                     mWeatherDisplayTextView.append(string + "\n\n\n");
                 }
+            } else {
+                showErrorMessage();
             }
         }
     }

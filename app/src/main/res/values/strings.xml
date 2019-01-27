@@ -27,6 +27,9 @@
     <!--Title of the Refresh menu button-->
     <string name="refresh_menu_item">Refresh</string>
 
+    <!--Error message-->
+    <string name="error_message">Something went wrong. Please try again.</string>
+
     <!-- - - - - - - - - - - - - -->
     <!--Used by SunshineDateUtils-->
     <!-- - - - - - - - - - - - - -->
