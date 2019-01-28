@@ -14,8 +14,23 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     private String[] mWeatherData;
 
-    ForecastAdapter() {
+    // OnClick handles to interact with activity.
+    private final ForecastAdapterOnClickHandler mClickHandler;
 
+    /**
+     * Interface that receives onClick messages.
+     */
+    public interface ForecastAdapterOnClickHandler {
+        void onClick(String weather);
+    }
+
+    /**
+     * Create ForecastAdapter.
+     *
+     * @param onClickHandler OnClick handler that will be called when item is clicked.
+     */
+    ForecastAdapter(ForecastAdapterOnClickHandler onClickHandler) {
+        mClickHandler = onClickHandler;
     }
 
     /**
@@ -74,13 +89,29 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     /**
      * ViewHolder to cache view in Adapter
      */
-    class ForecastAdapterViewHolder extends RecyclerView.ViewHolder {
+    class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         final TextView mWeatherTextView;
 
+        /**
+         * Creates new ViewHolder.
+         *
+         * @param itemView View that will be used bu this ViewHolder.
+         */
         ForecastAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
             mWeatherTextView = itemView.findViewById(R.id.tv_weather_data);
+            itemView.setOnClickListener(this);
+        }
+
+        /**
+         * Gets called after view is clicked.
+         *
+         * @param v View that was clicked.
+         */
+        @Override
+        public void onClick(View v) {
+            mClickHandler.onClick((String) mWeatherTextView.getText());
         }
     }
 }

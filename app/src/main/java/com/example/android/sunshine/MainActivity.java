@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
@@ -32,7 +33,7 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Improve performance, but child count can't be changed.
         mRecyclerView.setHasFixedSize(true);
-        mForecastAdapter = new ForecastAdapter();
+        mForecastAdapter = new ForecastAdapter(this);
         mRecyclerView.setAdapter(mForecastAdapter);
 
         mErrorMessageTextView = findViewById(R.id.tv_error_message);
@@ -103,6 +104,16 @@ public class MainActivity extends AppCompatActivity {
     private void showErrorMessage () {
         mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageTextView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Handler for clicks on views in RecyclerVIew.
+     *
+     * @param weather data for the the view that was clicked.
+     */
+    @Override
+    public void onClick(String weather) {
+        Toast.makeText(this, weather, Toast.LENGTH_SHORT).show();
     }
 
     private class WeatherAsyncTask extends AsyncTask<String, Void, String[]> {
