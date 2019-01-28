@@ -18,6 +18,8 @@ package com.example.android.sunshine;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +34,8 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mWeatherDisplayTextView;
+    private RecyclerView mRecyclerView;
+    private ForecastAdapter mForecastAdapter;
     private TextView mErrorMessageTextView;
     private ProgressBar mProgressBar;
 
@@ -41,7 +44,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        mWeatherDisplayTextView = findViewById(R.id.tv_weather_data);
+        mRecyclerView = findViewById(R.id.rv_forecast);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        // Improve performance, but child count can't be changed.
+        mRecyclerView.setHasFixedSize(true);
+        mForecastAdapter = new ForecastAdapter();
+        mRecyclerView.setAdapter(mForecastAdapter);
+
         mErrorMessageTextView = findViewById(R.id.tv_error_message);
         mProgressBar = findViewById(R.id.pb_loading_data);
 
@@ -59,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.action_refresh) {
-            mWeatherDisplayTextView.setText("");
+            // Reset RecyclerView before querying for new data.
+            mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
         }
@@ -80,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
      * Showing weather data and hiding error message
      */
     private void showWeatherDataView() {
-        mWeatherDisplayTextView.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         mErrorMessageTextView.setVisibility(View.INVISIBLE);
     }
 
@@ -88,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
      * Showing error message and hiding weather data
      */
     private void showErrorMessage () {
-        mWeatherDisplayTextView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageTextView.setVisibility(View.VISIBLE);
     }
 
@@ -125,10 +138,9 @@ public class MainActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.INVISIBLE);
 
             if (weatherData != null) {
-                for (String string: weatherData) {
-                    showWeatherDataView();
-                    mWeatherDisplayTextView.append(string + "\n\n\n");
-                }
+                showWeatherDataView();
+                // Update RecyclerView with new data.
+                mForecastAdapter.setWeatherData(weatherData);
             } else {
                 showErrorMessage();
             }
