@@ -15,10 +15,16 @@
  */
 package com.example.android.sunshine;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,17 +34,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.android.sunshine.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements
+        ForecastAdapterOnClickHandler,
+        LoaderCallbacks<String[]> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static final int LOADER_ID = 22;
+    private static final String SEARCH_QUERY_URL_EXTRA = "query";
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
@@ -116,7 +127,16 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     private void loadWeatherData() {
         showWeatherDataView();
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
-        new WeatherAsyncTask().execute(location);
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(SEARCH_QUERY_URL_EXTRA, location);
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String> searchLoader = loaderManager.getLoader(LOADER_ID);
+        if (searchLoader == null) {
+            loaderManager.initLoader(LOADER_ID, queryBundle, this);
+        } else {
+            loaderManager.restartLoader(LOADER_ID, queryBundle, this);
+        }
     }
 
     /**
@@ -147,45 +167,75 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         startActivity(intent);
     }
 
-    private class WeatherAsyncTask extends AsyncTask<String, Void, String[]> {
+    // warning suppressed because tutorial specifically use AsyncTaskLoader
+    @SuppressLint("StaticFieldLeak")
+    @NonNull
+    @Override
+    public Loader<String[]> onCreateLoader(int i, @Nullable final Bundle bundle) {
+        return new AsyncTaskLoader<String[]>(this) {
 
-        @Override
-        protected void onPreExecute() {
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+            String[] mWeatherDataCache;
 
-        @Override
-        protected String[] doInBackground(String... strings) {
-            if (strings.length == 0) {
-                return null;
+            @Override
+            protected void onStartLoading() {
+                if (bundle == null) {
+                    return;
+                }
+                if (mWeatherDataCache != null) {
+                    deliverResult(mWeatherDataCache);
+                } else {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
             }
 
-            String location = strings[0];
-            URL url = NetworkUtils.buildUrl(location);
+            @Nullable
+            @Override
+            public String[] loadInBackground() {
+                if (bundle == null) {
+                    return null;
+                }
+                String location = bundle.getString(SEARCH_QUERY_URL_EXTRA);
+                if (location == null || location.isEmpty()) {
+                    return null;
+                }
 
-            try {
-                String jsonResponse = NetworkUtils
-                        .getResponseFromHttpUrl(url);
-                String[] weatherResponse = OpenWeatherJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonResponse);
-                return weatherResponse;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                URL url = NetworkUtils.buildUrl(location);
+                try {
+                    String jsonResponse = NetworkUtils
+                            .getResponseFromHttpUrl(url);
+                    String[] weatherResponse = OpenWeatherJsonUtils
+                            .getSimpleWeatherStringsFromJson(MainActivity.this, jsonResponse);
+                    return weatherResponse;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
-        }
 
-        @Override
-        protected void onPostExecute(String[] weatherData) {
-            mProgressBar.setVisibility(View.INVISIBLE);
-
-            if (weatherData != null) {
-                showWeatherDataView();
-                // Update RecyclerView with new data.
-                mForecastAdapter.setWeatherData(weatherData);
-            } else {
-                showErrorMessage();
+            @Override
+            public void deliverResult(@Nullable String[] data) {
+                mWeatherDataCache = data;
+                super.deliverResult(data);
             }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<String[]> loader, String[] weatherData) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+        if (weatherData != null) {
+            showWeatherDataView();
+            // Update RecyclerView with new data.
+            mForecastAdapter.setWeatherData(weatherData);
+        } else {
+            showErrorMessage();
         }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<String[]> loader) {
+        // not used
     }
 }
