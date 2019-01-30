@@ -27,6 +27,12 @@
     <!--Title of the Refresh menu button-->
     <string name="refresh_menu_item">Refresh</string>
 
+    <!--Title of the Open Map menu button-->
+    <string name="map_menu_item">Map Location</string>
+
+    <!--Title of the Share menu button-->
+    <string name="share_menu_item">Share</string>
+
     <!--Error message-->
     <string name="error_message">Something went wrong. Please try again.</string>
 

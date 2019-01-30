@@ -16,11 +16,13 @@
 package com.example.android.sunshine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +37,8 @@ import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
@@ -79,7 +83,31 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             return true;
         }
 
+        if (itemId == R.id.action_map) {
+            showMap();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method will fire off an implicit Intent to view a location on a map.
+     */
+    private void showMap() {
+        String addressString = "Middle of Nowhere";
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo").appendQueryParameter("q", addressString);
+        Uri addressUri = builder.build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(addressUri);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d(TAG, "Couldn't call " + addressUri.toString()
+                    + ", no receiving apps installed!");
+        }
     }
 
     /**
