@@ -92,10 +92,11 @@ public class MainActivity extends AppCompatActivity implements
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
-        }
-
-        if (itemId == R.id.action_map) {
+        } else if (itemId == R.id.action_map) {
             showMap();
+            return true;
+        } else if (itemId == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

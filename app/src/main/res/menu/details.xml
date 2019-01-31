@@ -8,4 +8,9 @@
         android:title="@string/share_menu_item"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/settings_menu_item"
+        app:showAsAction="never" />
+
 </menu>
