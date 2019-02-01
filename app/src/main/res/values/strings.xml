@@ -33,6 +33,25 @@
     <!--Error message-->
     <string name="error_message">Something went wrong. Please try again.</string>
 
+    <!-- - - - - - - - - - - -->
+    <!--Used by Preferences  -->
+    <!-- - - - - - - - - - - -->
+
+    <!--For location preference-->
+    <string name="pref_location_label">Location</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_location_default">Nowhere</string>
+
+    <!--For temperature units preference-->
+    <string name="pref_units_label">Temperature Units</string>
+    <string name="pref_units_key" translatable="false">units</string>
+
+    <!--For temperature units preference entries -->
+    <string name="pref_units_metric_label">Metric</string>
+    <string name="pref_units_metric_key" translatable="false">metric</string>
+    <string name="pref_units_imperial_label">Imperial</string>
+    <string name="pref_units_imperial_key" translatable="false">imperial</string>
+
     <!-- - - - - - - - - - - - - -->
     <!--Used by SunshineDateUtils-->
     <!-- - - - - - - - - - - - - -->
