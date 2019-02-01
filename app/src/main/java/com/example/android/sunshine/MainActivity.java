@@ -17,8 +17,10 @@ package com.example.android.sunshine;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -44,6 +46,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapterOnClickHandler,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         LoaderCallbacks<String[]> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements
     private ForecastAdapter mForecastAdapter;
     private TextView mErrorMessageTextView;
     private ProgressBar mProgressBar;
+
+    private static boolean sPreferenceUpdated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,26 @@ public class MainActivity extends AppCompatActivity implements
         mProgressBar = findViewById(R.id.pb_loading_data);
 
         loadWeatherData();
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // if preferences were changes - update the data
+        if (sPreferenceUpdated) {
+            loadWeatherData();
+            sPreferenceUpdated = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -107,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements
      * This method will fire off an implicit Intent to view a location on a map.
      */
     private void showMap() {
-        String addressString = "Middle of Nowhere";
+        String addressString = SunshinePreferences.getPreferredWeatherLocation(this);
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("geo").appendQueryParameter("q", addressString);
         Uri addressUri = builder.build();
@@ -168,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    // warning suppressed because tutorial specifically use AsyncTaskLoader
+    // Warning suppressed because tutorial specifically use AsyncTaskLoader.
     @SuppressLint("StaticFieldLeak")
     @NonNull
     @Override
@@ -237,6 +262,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(@NonNull Loader<String[]> loader) {
-        // not used
+        // Not used.
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Set the flag if preferences were changed.
+        sPreferenceUpdated = true;
     }
 }
