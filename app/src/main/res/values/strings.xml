@@ -33,6 +33,8 @@
     <!--Error message-->
     <string name="error_message">Something went wrong. Please try again.</string>
 
+    <string name="content_authority">com.example.android.sunshine</string>
+
     <!-- - - - - - - - - - - -->
     <!--Used by Preferences  -->
     <!-- - - - - - - - - - - -->
