@@ -12,7 +12,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "weather.db";
 
     /** Version number of the database. Incremented after each upgrade. */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,7 +30,10 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherEntry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_PRESSURE + " REAL NOT NULL, " +
                 WeatherEntry.COLUMN_WIND_SPEED + " REAL NOT NULL, " +
-                WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL " + ");";
+                WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL, " +
+
+                /** Ensured that each weather has unique date */
+                " UNIQUE (" + WeatherEntry.COLUMN_DATE + ") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_WEATHER_TABLE);
     }
