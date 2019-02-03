@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
@@ -28,7 +27,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      * Interface that receives onClick messages.
      */
     public interface ForecastAdapterOnClickHandler {
-        void onClick(String weather);
+        void onClick(long weatherDate);
     }
 
     /**
@@ -136,7 +135,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
          */
         @Override
         public void onClick(View v) {
-            mClickHandler.onClick((String) mWeatherTextView.getText());
+            int position = getAdapterPosition();
+            mCursor.moveToPosition(position);
+            long date = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+            mClickHandler.onClick(date);
         }
     }
 }

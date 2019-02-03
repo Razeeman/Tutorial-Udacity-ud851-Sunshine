@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int LOADER_ID = 22;
-    private static final String SEARCH_QUERY_URL_EXTRA = "query";
 
     // Column names what are needed for our purposes.
     private static final String[] COLUMN_NAMES = {
@@ -113,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (itemId == R.id.action_refresh) {
             // Reset RecyclerView before querying for new data.
+            showLoading();
             mForecastAdapter.setWeatherCursor(null);
             getSupportLoaderManager().initLoader(LOADER_ID, null, this);
             return true;
@@ -165,12 +164,13 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Handler for clicks on views in RecyclerVIew.
      *
-     * @param weather data for the the view that was clicked.
+     * @param weatherDate data for the the view that was clicked.
      */
     @Override
-    public void onClick(String weather) {
+    public void onClick(long weatherDate) {
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT, weather);
+        Uri queryUri = WeatherContract.WeatherEntry.buildWeatherUriWithDate(weatherDate);
+        intent.setData(queryUri);
         startActivity(intent);
     }
 
