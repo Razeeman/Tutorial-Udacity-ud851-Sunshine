@@ -96,9 +96,9 @@ public class WeatherProvider extends ContentProvider {
                             rowsInserted++;
                         }
                     }
-                    db.endTransaction();
-                } finally {
                     db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
                 }
 
                 if (rowsInserted > 0) {

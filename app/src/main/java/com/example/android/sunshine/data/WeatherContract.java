@@ -3,6 +3,8 @@ package com.example.android.sunshine.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.example.android.sunshine.utilities.SunshineDateUtils;
+
 public class WeatherContract {
 
     // Name of the content provider.
@@ -16,6 +18,11 @@ public class WeatherContract {
 
     // Defines the structure of weather table
     public static final class WeatherEntry implements BaseColumns {
+        // The base CONTENT_URI used to query the Weather table from the content provider
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_WEATHER)
+                .build();
+
         // Name of the table.
         public static final String TABLE_NAME = "weather";
 
@@ -40,5 +47,17 @@ public class WeatherContract {
 
         // Meteorological degrees (0 is north, 180 is south), stored as a float.
         public static final String COLUMN_DEGREES = "degrees";
+
+        /**
+         * Returns just the selection part of the weather query from a normalized today value.
+         * This is used to get a weather forecast from today's date. To make this easy to use
+         * in compound selection, we embed today's date as an argument in the query.
+         *
+         * @return The selection part of the weather query for today onwards
+         */
+        public static String getSqlSelectForTodayOnwards() {
+            long normalizedUtcNow = SunshineDateUtils.normalizeDate(System.currentTimeMillis());
+            return WeatherContract.WeatherEntry.COLUMN_DATE + " >= " + normalizedUtcNow;
+        }
     }
 }
