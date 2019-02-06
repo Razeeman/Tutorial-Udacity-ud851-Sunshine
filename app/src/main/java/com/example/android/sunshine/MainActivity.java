@@ -36,6 +36,7 @@ import android.widget.ProgressBar;
 import com.example.android.sunshine.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.sync.SunshineSyncUtils;
 import com.example.android.sunshine.utilities.FakeDataUtils;
 
 public class MainActivity extends AppCompatActivity implements
@@ -70,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        FakeDataUtils.insertFakeData(this);
-
         mRecyclerView = findViewById(R.id.rv_forecast);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -87,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements
         showLoading();
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+
+        SunshineSyncUtils.startImmediateSync(this);
     }
 
     @Override

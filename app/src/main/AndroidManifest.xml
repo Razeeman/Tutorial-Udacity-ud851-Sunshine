@@ -37,6 +37,10 @@
             android:name=".data.WeatherProvider"
             android:exported="false"/>
 
+        <!--This is required for immediate syncs -->
+        <service android:name=".sync.SunshineSyncIntentService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
