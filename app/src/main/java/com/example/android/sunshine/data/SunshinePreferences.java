@@ -235,6 +235,21 @@ public class SunshinePreferences {
         return lastNotificationTime;
     }
 
+    /**
+     * Returns the elapsed time in milliseconds since the last notification was shown. This is used
+     * as part of our check to see if we should show another notification when the weather is
+     * updated.
+     *
+     * @param context Used to access SharedPreferences as well as use other utility methods
+     * @return Elapsed time in milliseconds since the last notification was shown
+     */
+    public static long getEllapsedTimeSinceLastNotification(Context context) {
+        long lastNotificationTimeMillis =
+                SunshinePreferences.getLastNotificationTimeInMillis(context);
+        long timeSinceLastNotification = System.currentTimeMillis() - lastNotificationTimeMillis;
+        return timeSinceLastNotification;
+    }
+
     private static String getDefaultWeatherLocation() {
         /** This will be implemented in a future lesson **/
         return DEFAULT_WEATHER_LOCATION;

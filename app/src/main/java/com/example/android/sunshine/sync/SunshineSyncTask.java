@@ -3,11 +3,8 @@ package com.example.android.sunshine.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
-import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.NetworkUtils;
@@ -47,7 +44,7 @@ public class SunshineSyncTask {
                 boolean notificationsEnabled = SunshinePreferences
                         .areNotificationsEnabled(context);
                 long timeSinceLastNotification = SunshinePreferences
-                        .getLastNotificationTimeInMillis(context);
+                        .getEllapsedTimeSinceLastNotification(context);
 
                 if (notificationsEnabled && timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
                     NotificationUtils.notifyUserOfNewWeather(context);
