@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
-        SunshineSyncUtils.startImmediateSync(this);
+        SunshineSyncUtils.initialize(this);
     }
 
     @Override
