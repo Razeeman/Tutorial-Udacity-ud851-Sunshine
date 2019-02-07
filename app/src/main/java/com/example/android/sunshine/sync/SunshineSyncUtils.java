@@ -17,7 +17,7 @@ import com.firebase.jobdispatcher.Trigger;
 public class SunshineSyncUtils {
 
     // Interval at which to sync with the weather.
-    private static final int SYNC_INTERVAL_SECONDS = 60; // 3 hours.
+    private static final int SYNC_INTERVAL_SECONDS = 3 * 60 * 60; // 3 hours.
     private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
 
     private static boolean sInitialized = false;
