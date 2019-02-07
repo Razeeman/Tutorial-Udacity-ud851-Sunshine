@@ -3,9 +3,15 @@ package com.example.android.sunshine.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.text.format.DateUtils;
 
+import com.example.android.sunshine.R;
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.NotificationUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
@@ -37,6 +43,15 @@ public class SunshineSyncTask {
                 contentResolver.bulkInsert(
                         WeatherContract.WeatherEntry.CONTENT_URI,
                         contentValues);
+
+                boolean notificationsEnabled = SunshinePreferences
+                        .areNotificationsEnabled(context);
+                long timeSinceLastNotification = SunshinePreferences
+                        .getLastNotificationTimeInMillis(context);
+
+                if (notificationsEnabled && timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
+                    NotificationUtils.notifyUserOfNewWeather(context);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
