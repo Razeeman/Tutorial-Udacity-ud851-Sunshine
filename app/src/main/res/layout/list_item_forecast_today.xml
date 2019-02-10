@@ -6,7 +6,7 @@
     android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary">
+    android:background="@drawable/today_touch_selector">
 
     <TextView
         android:id="@+id/tv_weather_date"
