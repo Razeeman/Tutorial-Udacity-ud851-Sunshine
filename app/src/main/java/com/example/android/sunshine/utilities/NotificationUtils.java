@@ -40,7 +40,6 @@ public class NotificationUtils {
     public static final int INDEX_MAX_TEMP = 1;
     public static final int INDEX_MIN_TEMP = 2;
 
-//  TODO (1) Create a constant int value to identify the notification
     private static final int WEATHER_NOTIFICATION_ID = 3004;
 
     /**
