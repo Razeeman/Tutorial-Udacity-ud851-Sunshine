@@ -112,7 +112,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             switch (viewType) {
                 case VIEW_TYPE_TODAY: {
                     weatherImageId = SunshineWeatherUtils
-                            .getLargeArtResourceIdForWeatherCondition(weatherId);;
+                            .getLargeArtResourceIdForWeatherCondition(weatherId);
                     break;
                 }
 

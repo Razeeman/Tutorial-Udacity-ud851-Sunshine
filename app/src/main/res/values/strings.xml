@@ -96,6 +96,7 @@
         <xliff:g id="temp">%1.0f</xliff:g>\u00B0F
     </string>
 
+    <string name="wind_label">Wind</string>
     <!-- Wind in kph [CHAR LIMIT=25] -->
     <string name="format_wind_kmh">
         <xliff:g id="speed">%1$1.0f</xliff:g> km/h <xliff:g id="direction">%2$s</xliff:g>
@@ -106,11 +107,13 @@
         <xliff:g id="speed">%1$1.0f</xliff:g> mph <xliff:g id="direction">%2$s</xliff:g>
     </string>
 
+    <string name="pressure_label">Pressure</string>
     <!-- Pressure format -->
     <string name="format_pressure">
         <xliff:g id="pressure">%1.0f</xliff:g> hPa
     </string>
 
+    <string name="humidity_label">Humidity</string>
     <!-- Humidity format -->
     <string name="format_humidity">
         <xliff:g id="humidity">%1.0f</xliff:g> %%
@@ -176,6 +179,19 @@
 
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
 
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      - Used for Accessibility purposes (Accessibility == a11y)                            -
+      -                                                                                    -
+      - Fun Fact: Accessibility is abbreviated a11y because accessibility starts with 'a', -
+      - followed by 11 letters, and then a 'y'. It is pronounced alley, like an alley cat. -
+      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <string name="a11y_forecast">Forecast: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_forecast_icon">Forecast icon: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_high_temp">High: <xliff:g id="high">%1$s</xliff:g></string>
+    <string name="a11y_low_temp">Low: <xliff:g id="low">%1$s</xliff:g></string>
+    <string name="a11y_humidity">Humidity: <xliff:g id="humidity">%1$s</xliff:g></string>
+    <string name="a11y_pressure">Barometric Pressure: <xliff:g id="pressure">%1$s</xliff:g></string>
+    <string name="a11y_wind">Wind speed and direction: <xliff:g id="wind">%1$s</xliff:g></string>
 
     <!-- - - - - - - - - - - -->
     <!-- Used by NetworkUtils-->

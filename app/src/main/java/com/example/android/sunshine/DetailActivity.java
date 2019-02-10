@@ -2,7 +2,9 @@ package com.example.android.sunshine;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -10,12 +12,11 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.databinding.ActivityDetailBinding;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
@@ -45,29 +46,18 @@ public class DetailActivity extends AppCompatActivity implements
     public static final int INDEX_WEATHER_DEGREES = 6;
     public static final int INDEX_WEATHER_CONDITION_ID = 7;
 
+    // Used for sharing.
     private String mWeatherSummary;
-    private TextView mDateTextView;
-    private TextView mDescriptionTextView;
-    private TextView mHighTemperatureTextView;
-    private TextView mLowTemperatureTextView;
-    private TextView mHumidityTextView;
-    private TextView mWindTextView;
-    private TextView mPressureTextView;
 
     private Uri mUri;
+
+    private ActivityDetailBinding mDetailBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
 
-        mDateTextView = findViewById(R.id.tv_date);
-        mDescriptionTextView = findViewById(R.id.tv_description);
-        mHighTemperatureTextView = findViewById(R.id.tv_high_temperature);
-        mLowTemperatureTextView = findViewById(R.id.tv_low_temperature);
-        mHumidityTextView = findViewById(R.id.tv_humidity);
-        mWindTextView = findViewById(R.id.tv_wind);
-        mPressureTextView = findViewById(R.id.tv_pressure);
+        mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
         mUri = getIntent().getData();
 
@@ -144,37 +134,65 @@ public class DetailActivity extends AppCompatActivity implements
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || !cursor.moveToFirst()) return;
 
+        // Weather date.
         long date = cursor.getLong(INDEX_WEATHER_DATE);
         String dateString = SunshineDateUtils.getFriendlyDateString(this, date, true);
-        mDateTextView.setText(dateString);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherDate.setText(dateString);
 
+        // Weather description.
         int weatherId = cursor.getInt(INDEX_WEATHER_CONDITION_ID);
-        String weatherIdString = SunshineWeatherUtils.getStringForWeatherCondition(this, weatherId);
-        mDescriptionTextView.setText(weatherIdString);
+        String weatherStatus = SunshineWeatherUtils.getStringForWeatherCondition(this, weatherId);
+        String weatherStatusA11y = getString(R.string.a11y_forecast, weatherStatus);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherStatus.setText(weatherStatus);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherStatus.setContentDescription(weatherStatusA11y);
 
+        // Weather icon.
+        int weatherImageId = SunshineWeatherUtils
+                .getLargeArtResourceIdForWeatherCondition(weatherId);
+        mDetailBinding.layoutPrimaryWeatherInfo.ivWeatherIcon.setImageResource(weatherImageId);
+        mDetailBinding.layoutPrimaryWeatherInfo.ivWeatherIcon.setContentDescription(weatherStatusA11y);
+
+        // Weather high temperature.
         double highTemp = cursor.getDouble(INDEX_WEATHER_MAX_TEMP);
         String highTempString = SunshineWeatherUtils.formatTemperature(this, highTemp);
-        mHighTemperatureTextView.setText(highTempString);
+        String highTempA11y = getString(R.string.a11y_high_temp, highTempString);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherHighTemp.setText(highTempString);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherHighTemp.setContentDescription(highTempA11y);
 
+        // Weather low temperature.
         double lowTemp = cursor.getDouble(INDEX_WEATHER_MIN_TEMP);
         String lowTempString = SunshineWeatherUtils.formatTemperature(this, lowTemp);
-        mLowTemperatureTextView.setText(lowTempString);
+        String lowTempA11y = getString(R.string.a11y_low_temp, lowTempString);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherLowTemp.setText(lowTempString);
+        mDetailBinding.layoutPrimaryWeatherInfo.tvWeatherLowTemp.setContentDescription(lowTempA11y);
 
+        // Weather humidity.
         float humidity = cursor.getFloat(INDEX_WEATHER_HUMIDITY);
         String humidityString = getString(R.string.format_humidity, humidity);
-        mHumidityTextView.setText(humidityString);
+        String humidityA11y = getString(R.string.a11y_humidity, humidityString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherHumidity.setText(humidityString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherHumidity.setContentDescription(humidityA11y);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherHumidityLabel.setContentDescription(humidityA11y);
 
+        // Weather wind speed and direction.
         float windSpeed = cursor.getFloat(INDEX_WEATHER_WIND_SPEED);
         float windDirection = cursor.getFloat(INDEX_WEATHER_DEGREES);
         String windString = SunshineWeatherUtils.getFormattedWind(this, windSpeed, windDirection);
-        mWindTextView.setText(windString);
+        String windA11y = getString(R.string.a11y_wind, windString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherWind.setText(windString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherWind.setContentDescription(windA11y);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherWindLabel.setContentDescription(windA11y);
 
+        // Weather pressure.
         float pressure = cursor.getFloat(INDEX_WEATHER_PRESSURE);
         String pressureString = getString(R.string.format_pressure, pressure);
-        mPressureTextView.setText(pressureString);
+        String pressureA11y = getString(R.string.a11y_pressure, pressureString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherPressure.setText(pressureString);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherPressure.setContentDescription(pressureA11y);
+        mDetailBinding.layoutExtraWeatherInfo.tvWeatherPressureLabel.setContentDescription(pressureA11y);
 
         mWeatherSummary = String.format("%s - %s - %s/%s",
-                dateString, weatherIdString, highTempString, lowTempString);
+                dateString, weatherStatus, highTempString, lowTempString);
     }
 
     @Override
